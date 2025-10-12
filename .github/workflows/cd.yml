@@ -21,17 +21,18 @@ jobs:
       with:
         php-version: '8.2.12'
     
-    # Installer d'abord toutes les dépendances
-    - run: composer install
+    # Déplacer les fixtures avant l'installation de production
+    - run: |
+        mkdir -p ./backup
+        mv ./src/DataFixtures ./backup/
     
-    # Vider le cache
-    - run: php bin/console cache:clear
-    
-    # Ensuite, installer uniquement les dépendances de production
+    # Installation en mode production
     - run: composer install --no-dev --optimize-autoloader --no-scripts
     
-    # Vider à nouveau le cache pour la production
-    - run: APP_ENV=prod php bin/console cache:clear
+    # Nettoyage du cache en production
+    - run: |
+        APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear
+        APP_ENV=prod APP_DEBUG=0 php bin/console cache:warmup
 
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@4.3.3
@@ -45,3 +46,5 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
+          **/DataFixtures/**
+          backup/**
