@@ -30,6 +30,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         port: ${{ secrets.FTP_PORT }}
         exclude: |
+          vendor/**
           **/.git*
           **/.git*/**
           **/node_modules/**
