@@ -34,6 +34,7 @@ jobs:
         APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear
         APP_ENV=prod APP_DEBUG=0 php bin/console cache:warmup
 
+    # ...existing code...
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@4.3.3
       with:
@@ -41,10 +42,17 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         port: ${{ secrets.FTP_PORT }}
-        server-dir: ./
+        server-dir: "./"          # Assurez-vous que le chemin correspond à votre dossier sur le serveur
+        local-dir: "./"           # Dossier local à déployer
+        dangerous-clean-slate: false   # Ne pas supprimer les fichiers existants
+        timeout: 120000           # Augmenter le timeout à 2 minutes
+        protocol: ftp            # Forcer le protocole FTP standard
+        log-level: verbose       # Activer les logs détaillés
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
           **/DataFixtures/**
           backup/**
+          **.env
+          **.env.local
